@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-cfg
+data:
+  haproxy.cfg: |
+    frontend http_front
+        bind *:80
+        default_backend nginx_backend
+    backend nginx_backend
+        server nginx nginx-svc:80 check
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: haproxy-edge
+  labels:
+    app: haproxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: haproxy
+  template:
+    metadata:
+      labels:
+        app: haproxy
+    spec:
+      containers:
+      - name: haproxy
+        image: haproxy:2.8
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: cfg-volume
+          mountPath: /usr/local/etc/haproxy
+      volumes:
+      - name: cfg-volume
+        configMap:
+          name: haproxy-cfg
+---
+# NodePort服务方便本地访问HAProxy边缘节点
+apiVersion: v1
+kind: Service
+metadata:
+  name: haproxy-svc
+spec:
+  type: NodePort
+  selector:
+    app: haproxy
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080

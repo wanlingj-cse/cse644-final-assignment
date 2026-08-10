@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: public-ubuntu-pod
+  labels:
+    app: public-demo
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu:24.04
+    command: ["sleep", "3600"]

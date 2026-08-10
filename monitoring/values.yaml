@@ -1,0 +1,18 @@
+prometheus:
+  prometheusSpec:
+    retention: 1h
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+    serviceMonitorSelector:
+      matchLabels:
+        app: nginx-health
+grafana:
+  persistence:
+    enabled: false
+  service:
+    type: NodePort

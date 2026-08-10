@@ -1,0 +1,25 @@
+# Nginx内部服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx-web
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# Python内部服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: python-web
+  ports:
+  - port: 8888
+    targetPort: 8888

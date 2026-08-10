@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-web
+  labels:
+    app: nginx-web
+spec:
+  replicas: 1 # 多实例，满足多运行实例要求
+  selector:
+    matchLabels:
+      app: nginx-web
+  template:
+    metadata:
+      labels:
+        app: nginx-web
+    spec:
+      containers:
+      - name: nginx
+        image: wanlingj/cse644-custom-nginx:v1
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: storage
+          mountPath: /usr/share/nginx/html/data
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: web-pvc

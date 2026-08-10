@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-web
+  labels:
+    app: python-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-web
+  template:
+    metadata:
+      labels:
+        app: python-web
+    spec:
+      containers:
+      - name: python
+        image: wanlingj/cse644-python-web:v1
+        ports:
+        - containerPort: 8888
