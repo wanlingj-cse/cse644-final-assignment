@@ -9,7 +9,7 @@ spec:
     repoURL: https://github.com/wanlingj-cse/cse644-final-assignment.git
     targetRevision: main
     # 仅同步assignment3下资源，和A2完全隔离
-    path: ~/cse644-final-assignment/cse644-final-assignment/manifests
+    path: ./manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: default
