@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nginx-web-monitor
+  namespace: default # 和prometheus、nginx同命名空间
+  labels:
+    prometheus: main # 【重点】必须和Prometheus CR中的serviceMonitorSelector匹配
+spec:
+  selector:
+    matchLabels:
+      app: nginx-web # 匹配nginx Service上的标签
+  endpoints:
+  - port: metrics # Service内端口名称，不是端口号
+    path: /metrics
+    interval: 15s
