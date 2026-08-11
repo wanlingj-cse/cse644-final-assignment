@@ -3,4 +3,21 @@ kind: ConfigMap
 metadata:
   name: nginx-config
 data:
-  GREET_MSG: "Welcome to CSE644 K8s Assignment | Student wanlingj"
+  nginx.conf: |
+    events {}
+    http {
+        server {
+            listen 80;
+            location / {
+                root /usr/share/nginx/html;
+                index index.html;
+            }
+            # ==========在这里新增状态端点==========
+            location /nginx_status {
+                stub_status on;
+                access_log off;
+                allow 127.0.0.1;
+                deny all;
+            }
+        }
+    }
