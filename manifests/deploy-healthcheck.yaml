@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: wanlingj/cse644-custom-nginx:invalid-broken-tag
+        image: wanlingj/cse644-custom-nginx:v1
         ports:
         - containerPort: 80
         # 注入ConfigMap环境变量
