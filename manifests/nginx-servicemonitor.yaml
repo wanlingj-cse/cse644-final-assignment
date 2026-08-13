@@ -2,8 +2,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: nginx-exporter-monitor
-  namespace: monitoring
+  namespace: default
   labels:
+    app: nginx-health
     prometheus: kube-prometheus  # 新增这一行，至关重要
 spec:
   selector:
