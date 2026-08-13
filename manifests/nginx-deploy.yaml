@@ -30,4 +30,4 @@ spec:
       volumes:
       - name: conf
         configMap:
-          name: nginx-conf
+          name: nginx-config
