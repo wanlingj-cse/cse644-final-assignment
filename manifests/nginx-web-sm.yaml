@@ -1,18 +1,17 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: nginx-exporter-monitor
+  name: nginx-web-sm
   namespace: monitoring
   labels:
-    prometheus: kube-prometheus  # 新增这一行，至关重要
+    release: prometheus
 spec:
-  selector:
-    matchLabels:
-      app: nginx-exporter
   namespaceSelector:
     matchNames:
       - default
+  selector:
+    matchLabels:
+      app: nginx-web
   endpoints:
     - port: metrics
-      path: /metrics
-      interval: 15s
+      interval: 10s
