@@ -8,10 +8,7 @@ prometheus:
       limits:
         cpu: 300m
         memory: 512Mi
-    serviceMonitorSelector:
-      matchLabels:
-        app: nginx-health
-    podMonitorSelector: {}
+
 grafana:
   persistence:
     enabled: false
