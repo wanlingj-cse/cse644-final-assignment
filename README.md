@@ -68,6 +68,12 @@ Run basic validation command to confirm Minikube & kubectl connectivity:
 ```bash
 kubectl get all -n default
 ```
+Expected clean output on a fresh Minikube cluster (no workload deployed yet):
+```bash
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   2d9h
+```
+Only the default Kubernetes service exists, confirming kubectl can successfully communicate with the Minikube control plane, and no leftover workloads exist from prior tests.
 ## 2. One-Click Automated Deployment
 All services can be deployed sequentially via the provided automation script scripts/deploy-all.sh without manually executing commands step by step.
 ```bash
