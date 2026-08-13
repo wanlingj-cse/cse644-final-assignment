@@ -11,6 +11,7 @@ prometheus:
     serviceMonitorSelector:
       matchLabels:
         app: nginx-health
+    podMonitorSelector: {}
 grafana:
   persistence:
     enabled: false
