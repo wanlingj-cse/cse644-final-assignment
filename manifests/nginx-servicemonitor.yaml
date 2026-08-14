@@ -4,16 +4,14 @@ metadata:
   name: nginx-exporter-monitor
   namespace: default
   labels:
-    app: nginx-health
-    prometheus: kube-prometheus  # 新增这一行，至关重要
+    release: kube-prometheus  # 新增这一行，至关重要
 spec:
   selector:
     matchLabels:
       app: nginx-exporter
   namespaceSelector:
-    matchNames:
-      - default
+    any: true
   endpoints:
-    - port: 9113
+    - port: metrics
       path: /metrics
       interval: 15s
