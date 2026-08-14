@@ -96,7 +96,28 @@ All core workloads including haproxy-edge, nginx-health, nginx-web, python-web a
 Evidence is in section 2 of CSE644_HW3_WanlingJiang.pdf.
 
 ### Important Post-Deployment Notes
-To access monitoring dashboards, we need to set up two-layer port-forward tunnels to open Prometheus and Grafana UI on host browser, how to port-forward is in section 5 of CSE644_HW3_WanlingJiang.pdf.
+#### Open ArgoCD UI Step-by-Step Port Forward
+1. Host machine terminal create SSH tunnel (must add -- before -L):
+vagrant ssh -- -L 8080:127.0.0.1:8080
+Keep this terminal open all the time.
+
+2. Open a new host terminal to log into Vagrant VM:
+vagrant ssh
+
+3. Inside Vagrant, forward ArgoCD service port:
+kubectl port-forward --address 0.0.0.0 svc/argocd-server -n argocd 8080:443
+
+4. Visit ArgoCD in host browser: http://localhost:8080
+
+5. Retrieve default admin password inside Vagrant:
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
+6. In order to run argocd commands, we need to login first using user name admin, password is what we just got from step 5:
+```bash
+argocd login localhost:8080
+```
+
+To access Grafana and Prometheus monitoring dashboards, we also need to set up two-layer port-forward tunnels to open Prometheus and Grafana UI on host browser, how to port-forward is in section 5 of CSE644_HW3_WanlingJiang.pdf.
 
 ## 3. GitOps Deployment via ArgoCD 
 ### Core Concept
@@ -117,6 +138,10 @@ git commit -m "Scale nginx-health replicas to 2 for GitOps reconciliation test"
 git push origin main
 ```
 3. ArgoCD detects the Git state drift and automatically rolls out updated Deployment
+Run:
+```bash
+kubectl get pods -l app=nginx-health -w
+```
 
 4. Observation: The second Pod transitions through lifecycle Pending → ContainerCreating → Running and finally reaches 1/1 Ready status.
 
@@ -154,11 +179,34 @@ The environment uses double-layer virtualization (Host → Vagrant VM → Miniku
 ```bash
 vagrant ssh -- -L 3000:127.0.0.1:3000
 ```
-2. Inside Vagrant terminal, forward Grafana service port:
+2. Inside another Vagrant terminal tab, forward Grafana service port:
 ```bash
-kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80
+kubectl port-forward -n monitoring svc/kube-prometheus-grafana 3000:80
 ```
 3. Open host browser URL: http://localhost:3000
+
+4. Default username is admin, get login password in another vagrant terminal tab:
+```bash
+kubectl --namespace monitoring get secret kube-prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+```
+5. Download the dashboard json according to section 5 of CSE644_HW3_WanlingJiang.pdf, the json file is under this link: https://grafana.com/grafana/dashboards/12708-nginx/, then import the dashboard json to grafana and you will get the dashboard.
+
+6. Then go to Dashboard Setting -> Variables, edit instance variable, let it be:
+```bash
+label_values(nginx_connections_active, instance)
+```
+And fill in Custom all value .+ 
+
+Save and refresh page.
+
+Note that if NGINX Status shows no data, we need to find the {} on the right hand side of the grafana page, and edit:
+```bash
+nginx_up{instance=~"$instance"}
+```
+Change it to:
+```bash
+nginx_up{instance=~"$instance"} OR nginx_up
+```
 #### Access Prometheus (Port 9090)
 1.Host terminal persistent tunnel:
 ```bash
@@ -166,9 +214,17 @@ vagrant ssh -- -L 9090:127.0.0.1:9090
 ```
 2. Vagrant terminal port-forward listening on all VM interfaces:
 ```bash
-kubectl port-forward --address 0.0.0.0 svc/prometheus-kube-prometheus-prometheus -n monitoring 9090:9090
+kubectl port-forward --address 0.0.0.0 -n monitoring prometheus-kube-prometheus-kube-prome-prometheus-0 9090:9090
 ```
 3. Open host browser URL: http://localhost:9090
+
+4. If in Promethus page, it says there's a time shift, run this:
+```bash
+sudo timedatectl set-ntp true
+```
+
+5. Then, we can query metrics like nginx_http_requests_total.
+
 ### 6.2 Evidences 
 All Evidences and explanations are in section 5 of CSE644_HW3_WanlingJiang.pdf.
 ### 6.3 Grafana Data Source Important Configuration
